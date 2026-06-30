@@ -1,0 +1,3262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RIWAQ Developments</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --teal: #3e8a8a;
+        --teal-dark: #2a5f5f;
+        --sand: #c4956a;
+        --cream: #f7f3ee;
+        --charcoal: #1a1a1a;
+        --mid: #4a4a4a;
+        --navy: #0d2233;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: #fff;
+        color: var(--charcoal);
+        overflow-x: hidden;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* ── CURSOR ── */
+      #cursor {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--sand);
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.1s,
+          width 0.3s,
+          height 0.3s,
+          background 0.3s;
+        mix-blend-mode: difference;
+      }
+      #cursor-ring {
+        position: fixed;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(196, 149, 106, 0.6);
+        pointer-events: none;
+        z-index: 9997;
+        transform: translate(-50%, -50%);
+        transition:
+          left 0.12s ease,
+          top 0.12s ease,
+          width 0.3s,
+          height 0.3s,
+          opacity 0.3s;
+      }
+      body:hover #cursor {
+        opacity: 1;
+      }
+
+      /* ── LOADER ── */
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: var(--navy);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+      }
+      #loader.out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loader-logo {
+        font-family: 'Cormorant Garant', serif;
+        font-size: 64px;
+        font-weight: 300;
+        color: #fff;
+        letter-spacing: 8px;
+        opacity: 0;
+        animation: loaderFade 0.8s 0.2s forwards;
+      }
+      .loader-ar {
+        font-size: 14px;
+        letter-spacing: 4px;
+        color: rgba(255, 255, 255, 0.4);
+        opacity: 0;
+        animation: loaderFade 0.8s 0.5s forwards;
+      }
+      .loader-bar {
+        width: 200px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        opacity: 0;
+        animation: loaderFade 0.5s 0.7s forwards;
+      }
+      .loader-bar-fill {
+        height: 100%;
+        background: var(--sand);
+        width: 0;
+        animation: loaderBar 1.4s 0.9s ease forwards;
+      }
+      @keyframes loaderFade {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes loaderBar {
+        to {
+          width: 100%;
+        }
+      }
+
+      /* ── PROGRESS ── */
+      #prog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: var(--sand);
+        width: 0%;
+        z-index: 9999;
+        box-shadow: 0 0 6px rgba(196, 149, 106, 0.5);
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5vw;
+        height: 68px;
+        transition:
+          background 0.5s,
+          box-shadow 0.5s;
+      }
+      nav.scrolled {
+        background: rgba(10, 18, 28, 0.94);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 1px 0 rgba(196, 149, 106, 0.15);
+      }
+      nav.solid {
+        background: var(--navy);
+      }
+      .nav-logo {
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .nav-logo:hover {
+        opacity: 0.75;
+      }
+      .nav-logo .en {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(16px, 2vw, 20px);
+        font-weight: 300;
+        letter-spacing: 4px;
+        color: #fff;
+        text-transform: uppercase;
+      }
+      .nav-logo .ar {
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .nav-links {
+        display: flex;
+        gap: clamp(16px, 2.5vw, 32px);
+        list-style: none;
+      }
+      .nav-links a {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.65);
+        transition: color 0.25s;
+        cursor: pointer;
+        position: relative;
+        padding-bottom: 4px;
+      }
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--sand);
+        transition: width 0.3s ease;
+      }
+      .nav-links a:hover::after,
+      .nav-links a.active::after {
+        width: 100%;
+      }
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #fff;
+      }
+      .nav-burger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        align-items: center;
+        flex-shrink: 0;
+        transition: border-color 0.3s;
+      }
+      .nav-burger:hover {
+        border-color: var(--sand);
+      }
+      .nav-burger span {
+        display: block;
+        width: 18px;
+        height: 1px;
+        background: #fff;
+        transition: transform 0.3s;
+      }
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+      }
+
+      /* ── PAGE SYSTEM ── */
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+      }
+
+      /* ── SHARED HERO BANNER ── */
+      .page-hero {
+        position: relative;
+        height: 58vh;
+        min-height: 400px;
+        display: flex;
+        align-items: flex-end;
+        padding: 0 5vw 64px;
+        overflow: hidden;
+      }
+      .page-hero-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+        transform: scale(1.08);
+        transition: transform 6s ease;
+      }
+      .page-hero.ready .page-hero-bg {
+        transform: scale(1);
+      }
+      .page-hero-ov {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(13, 34, 51, 0.92) 0%,
+          rgba(13, 34, 51, 0.45) 55%,
+          rgba(13, 34, 51, 0.2) 100%
+        );
+        z-index: 1;
+      }
+      .page-hero-content {
+        position: relative;
+        z-index: 2;
+      }
+      .page-hero-eyebrow {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 14px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.7s 0.15s,
+          transform 0.7s 0.15s;
+      }
+      .page-hero.ready .page-hero-eyebrow {
+        opacity: 1;
+        transform: none;
+      }
+      .page-hero-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(40px, 7vw, 80px);
+        font-weight: 300;
+        line-height: 1;
+        color: #fff;
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.8s 0.3s,
+          transform 0.8s 0.3s;
+      }
+      .page-hero.ready .page-hero-title {
+        opacity: 1;
+        transform: none;
+      }
+      .page-hero-title em {
+        font-style: italic;
+        color: var(--sand);
+      }
+      .page-hero-ar {
+        font-size: clamp(16px, 2.5vw, 22px);
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.35);
+        margin-top: 10px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.8s 0.5s,
+          transform 0.8s 0.5s;
+      }
+      .page-hero.ready .page-hero-ar {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* ── SECTION DIVIDER ── */
+      .s-div {
+        display: flex;
+        align-items: center;
+        padding: 0 5vw;
+        height: 1px;
+        overflow: visible;
+      }
+      .s-div-inner {
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+      .sdl {
+        flex: 1;
+        height: 1px;
+        background: rgba(196, 149, 106, 0.22);
+      }
+      .sdd {
+        width: 7px;
+        height: 7px;
+        background: var(--sand);
+        transform: rotate(45deg);
+        flex-shrink: 0;
+        margin: 0 12px;
+        opacity: 0.6;
+      }
+
+      /* ── SEC LABEL ── */
+      .sec-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .sec-label::before {
+        content: '';
+        display: block;
+        width: 0;
+        height: 1px;
+        background: var(--teal);
+        transition: width 0.9s ease;
+      }
+      .sec-label.v::before {
+        width: 30px;
+      }
+
+      /* ── SCROLL REVEALS ── */
+      .r {
+        opacity: 0;
+        transform: translateY(50px);
+        transition:
+          opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .rl {
+        opacity: 0;
+        transform: translateX(-60px);
+        transition:
+          opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .rr {
+        opacity: 0;
+        transform: translateX(60px);
+        transition:
+          opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .rs {
+        opacity: 0;
+        transform: scale(0.92);
+        transition:
+          opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .r.v,
+      .rl.v,
+      .rr.v,
+      .rs.v {
+        opacity: 1;
+        transform: none;
+      }
+      .d1 {
+        transition-delay: 0.1s;
+      }
+      .d2 {
+        transition-delay: 0.22s;
+      }
+      .d3 {
+        transition-delay: 0.34s;
+      }
+      .d4 {
+        transition-delay: 0.48s;
+      }
+      .d5 {
+        transition-delay: 0.62s;
+      }
+
+      /* ── MAGNETIC BTN ── */
+      .mag-btn {
+        position: relative;
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      /* ── GLITCH TEXT ── */
+      @keyframes glitch1 {
+        0%,
+        100% {
+          clip-path: inset(0 0 95% 0);
+          transform: translate(-2px, 0);
+        }
+        50% {
+          clip-path: inset(80% 0 0 0);
+          transform: translate(2px, 0);
+        }
+      }
+      @keyframes glitch2 {
+        0%,
+        100% {
+          clip-path: inset(50% 0 30% 0);
+          transform: translate(2px, 0);
+        }
+        50% {
+          clip-path: inset(20% 0 60% 0);
+          transform: translate(-2px, 0);
+        }
+      }
+
+      /* ── FLOATING PARTICLES ── */
+      #particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 1s;
+      }
+      #particles.show {
+        opacity: 1;
+      }
+
+      /* ══════════ HOME ══════════ */
+      .hero {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        min-height: 560px;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+        padding: 0 5vw 10vh;
+      }
+      .hero video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+      .hero-fb {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(160deg, #0d2233 0%, #1a3a3a 50%, #2a5f5f 100%);
+      }
+      .hero-ov {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(
+          to top,
+          rgba(13, 34, 51, 0.9) 0%,
+          rgba(13, 34, 51, 0.2) 60%,
+          rgba(13, 34, 51, 0.08) 100%
+        );
+      }
+      .hero-pyr {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        pointer-events: none;
+        line-height: 0;
+      }
+      .hero-pyr svg {
+        display: block;
+        width: 100%;
+      }
+      .ps {
+        stroke-dasharray: 900;
+        stroke-dashoffset: 900;
+        animation: pyrDraw1 8s 0.6s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+      }
+      .ps2 {
+        stroke-dasharray: 700;
+        stroke-dashoffset: 700;
+        animation: pyrDraw2 8s 1s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+      }
+      .ps3 {
+        stroke-dasharray: 550;
+        stroke-dashoffset: 550;
+        animation: pyrDraw3 8s 1.4s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+      }
+      .pf {
+        opacity: 0;
+        animation: pyrFill 8s 2.2s ease-in-out infinite;
+      }
+      @keyframes pyrDraw1 {
+        0% {
+          stroke-dashoffset: 900;
+          opacity: 0;
+        }
+        4% {
+          opacity: 1;
+        }
+        38% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        63% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        79% {
+          stroke-dashoffset: 0;
+          opacity: 0;
+        }
+        80% {
+          stroke-dashoffset: 900;
+          opacity: 0;
+        }
+        100% {
+          stroke-dashoffset: 900;
+          opacity: 0;
+        }
+      }
+      @keyframes pyrDraw2 {
+        0% {
+          stroke-dashoffset: 700;
+          opacity: 0;
+        }
+        4% {
+          opacity: 1;
+        }
+        38% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        63% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        79% {
+          stroke-dashoffset: 0;
+          opacity: 0;
+        }
+        80% {
+          stroke-dashoffset: 700;
+          opacity: 0;
+        }
+        100% {
+          stroke-dashoffset: 700;
+          opacity: 0;
+        }
+      }
+      @keyframes pyrDraw3 {
+        0% {
+          stroke-dashoffset: 550;
+          opacity: 0;
+        }
+        4% {
+          opacity: 1;
+        }
+        38% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        63% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        79% {
+          stroke-dashoffset: 0;
+          opacity: 0;
+        }
+        80% {
+          stroke-dashoffset: 550;
+          opacity: 0;
+        }
+        100% {
+          stroke-dashoffset: 550;
+          opacity: 0;
+        }
+      }
+      @keyframes pyrFill {
+        0%,
+        10% {
+          opacity: 0;
+        }
+        22%,
+        55% {
+          opacity: 1;
+        }
+        75%,
+        100% {
+          opacity: 0;
+        }
+      }
+      .hero-content {
+        position: relative;
+        z-index: 3;
+        max-width: min(640px, 90vw);
+      }
+      .hero-eyebrow {
+        font-size: 11px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 20px;
+        opacity: 0;
+        animation: heroIn 0.8s 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      }
+      .hero-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(44px, 7.5vw, 82px);
+        font-weight: 300;
+        line-height: 1.02;
+        color: #fff;
+        margin-bottom: 12px;
+        opacity: 0;
+        animation: heroIn 0.9s 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        overflow: hidden;
+      }
+      .hero-title em {
+        font-style: italic;
+        color: var(--sand);
+      }
+      .hero-ar {
+        font-size: clamp(16px, 2.5vw, 22px);
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.35);
+        margin-bottom: 38px;
+        opacity: 0;
+        animation: heroIn 0.9s 0.75s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      }
+      .hero-sc {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
+        opacity: 0;
+        animation: heroIn 0.9s 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        cursor: pointer;
+      }
+      .sc-line {
+        width: 0;
+        height: 1px;
+        background: var(--teal);
+        animation: scLine 1s 1.4s ease forwards;
+      }
+      @keyframes heroIn {
+        from {
+          opacity: 0;
+          transform: translateY(32px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes scLine {
+        to {
+          width: 50px;
+        }
+      }
+
+      /* scroll indicator */
+      .scroll-indicator {
+        position: absolute;
+        bottom: 32px;
+        right: 5vw;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        animation: heroIn 0.8s 1.4s forwards;
+      }
+      .scroll-indicator span {
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.35);
+        writing-mode: vertical-lr;
+      }
+      .scroll-dot {
+        width: 1px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+      .scroll-dot::after {
+        content: '';
+        position: absolute;
+        top: -100%;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: var(--sand);
+        animation: scrollDot 1.8s 1.8s ease-in-out infinite;
+      }
+      @keyframes scrollDot {
+        0% {
+          top: -100%;
+        }
+        100% {
+          top: 200%;
+        }
+      }
+
+      /* ── ABOUT (HOME) ── */
+      .about {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 600px;
+      }
+      @media (max-width: 768px) {
+        .about {
+          grid-template-columns: 1fr;
+        }
+      }
+      .about-img {
+        position: relative;
+        overflow: hidden;
+        min-height: 450px;
+      }
+      .about-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .about-img:hover img {
+        transform: scale(1.06);
+      }
+      .about-img-glow {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 55%;
+        background: linear-gradient(to top, var(--teal-dark), transparent);
+      }
+      .about-img-line {
+        position: absolute;
+        top: 40px;
+        right: 0;
+        width: 3px;
+        height: 0;
+        background: var(--sand);
+        transition: height 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .about-img.v .about-img-line {
+        height: calc(100% - 80px);
+      }
+      .about-text {
+        padding: clamp(50px, 8vw, 100px) clamp(32px, 5vw, 70px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: #fff;
+      }
+      .about-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(32px, 4vw, 48px);
+        font-weight: 300;
+        line-height: 1.12;
+        margin-bottom: 8px;
+      }
+      .about-title em {
+        color: var(--sand);
+        font-style: italic;
+      }
+      .about-ar {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.22);
+        margin-bottom: 26px;
+        letter-spacing: 1px;
+      }
+      .about-body {
+        font-size: 15px;
+        line-height: 1.9;
+        color: var(--mid);
+        max-width: 390px;
+        margin-bottom: 38px;
+      }
+      .about-lnk {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--sand);
+        border-bottom: 1px solid rgba(196, 149, 106, 0.18);
+        padding-bottom: 5px;
+        transition:
+          gap 0.35s,
+          color 0.2s;
+        cursor: pointer;
+      }
+      .about-lnk:hover {
+        gap: 22px;
+        color: var(--teal-dark);
+      }
+      .about-lnk::after {
+        content: '→';
+      }
+
+      /* ── TAGLINE BAND ── */
+      .tagline-band {
+        background: var(--navy);
+        padding: clamp(50px, 7vw, 80px) 5vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 14px;
+        position: relative;
+        overflow: hidden;
+      }
+      .tagline-band::before {
+        content: '';
+        position: absolute;
+        left: -100%;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.06), transparent);
+        animation: shimmer 4s 2s ease infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 200%;
+        }
+      }
+      .tagline-band::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.25), transparent);
+        transform: scaleX(0);
+        transition: transform 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .tagline-band.v::after {
+        transform: scaleX(1);
+      }
+      .tag-en {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(22px, 3.5vw, 38px);
+        font-style: italic;
+        font-weight: 300;
+        color: var(--sand);
+      }
+      .tag-ar {
+        font-size: clamp(15px, 2vw, 20px);
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .tag-by {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.38);
+        margin-top: 6px;
+      }
+
+      /* ── PROJECTS (HOME) ── */
+      .projects {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: var(--cream);
+      }
+      .sec-hdr {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: clamp(36px, 5vw, 64px);
+      }
+      .proj-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(36px, 5vw, 54px);
+        font-weight: 300;
+        line-height: 1;
+      }
+      .proj-title em {
+        color: var(--sand);
+        font-style: italic;
+      }
+      .stay-lbl {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(18px, 2.5vw, 28px);
+        font-weight: 300;
+        color: #ccc;
+        font-style: italic;
+        text-align: right;
+        line-height: 1.2;
+      }
+      .pgrid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-rows: 300px 300px;
+        gap: 3px;
+      }
+      @media (max-width: 900px) {
+        .pgrid {
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: auto;
+        }
+      }
+      @media (max-width: 600px) {
+        .pgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pcard {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .pcard:first-child {
+        grid-row: span 2;
+      }
+      @media (max-width: 900px) {
+        .pcard:first-child {
+          grid-row: span 1;
+        }
+      }
+      .pcard img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        min-height: 220px;
+        transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .pcard:hover img {
+        transform: scale(1.1);
+      }
+      .pcard-ov {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(13, 34, 51, 0.85) 0%, transparent 55%);
+        transition: background 0.5s;
+      }
+      .pcard:hover .pcard-ov {
+        background: linear-gradient(to top, rgba(13, 34, 51, 0.92) 0%, rgba(42, 95, 95, 0.28) 100%);
+      }
+      .pcard-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 22px 24px;
+        transform: translateY(8px);
+        transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .pcard:hover .pcard-info {
+        transform: none;
+      }
+      .pcard-sub {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 5px;
+      }
+      .pcard-name {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(18px, 2vw, 24px);
+        font-weight: 300;
+        color: #fff;
+        line-height: 1.2;
+      }
+      .pcard-tag {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--sand);
+        border: 1px solid rgba(196, 149, 106, 0.4);
+        padding: 3px 10px;
+        opacity: 0;
+        transform: translateY(8px);
+        transition:
+          opacity 0.3s 0.1s,
+          transform 0.3s 0.1s;
+      }
+      .pcard:hover .pcard-tag {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* ── STATS ── */
+      .stats {
+        padding: clamp(60px, 8vw, 96px) 5vw;
+        background: var(--charcoal);
+        position: relative;
+        overflow: hidden;
+      }
+      .stats-bg-txt {
+        position: absolute;
+        right: -20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(80px, 14vw, 180px);
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.018);
+        letter-spacing: 10px;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .stats::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(to bottom, transparent, var(--sand), transparent);
+      }
+      .stats-label {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 48px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .stats-label::before {
+        content: '';
+        display: block;
+        width: 30px;
+        height: 1px;
+        background: var(--sand);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: clamp(20px, 4vw, 44px);
+      }
+      @media (max-width: 700px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .stat-item {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 24px;
+      }
+      .stat-num {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(42px, 6vw, 66px);
+        font-weight: 300;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .stat-num span {
+        font-size: clamp(22px, 3vw, 34px);
+        color: var(--sand);
+      }
+      .stat-lbl {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.32);
+      }
+      .stat-bar {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        margin-top: 16px;
+        overflow: hidden;
+      }
+      .stat-bar-fill {
+        height: 100%;
+        background: var(--sand);
+        width: 0;
+        transition: width 1.8s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .stat-item.v .stat-bar-fill {
+        width: var(--bw);
+      }
+
+      /* ── CONTACT STRIP ── */
+      .contact-wrap {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: var(--cream);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(40px, 6vw, 80px);
+        align-items: start;
+      }
+      @media (max-width: 768px) {
+        .contact-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+      .contact-left h2 {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(34px, 5vw, 52px);
+        font-weight: 300;
+        line-height: 1.1;
+        margin-bottom: 8px;
+      }
+      .contact-left h2 em {
+        color: var(--teal);
+        font-style: italic;
+      }
+      .contact-left p {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 26px;
+      }
+      .c-detail {
+        font-size: 14px;
+        color: var(--mid);
+        line-height: 2.2;
+        border-top: 1px solid rgba(0, 0, 0, 0.09);
+        padding-top: 18px;
+      }
+      .c-detail a {
+        color: var(--teal);
+        transition: color 0.2s;
+      }
+      .c-detail a:hover {
+        color: var(--teal-dark);
+      }
+      .cform {
+        display: flex;
+        flex-direction: column;
+      }
+      .frow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .ff {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.11);
+        padding: 13px 0;
+        position: relative;
+      }
+      .ff::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--teal);
+        transition: width 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .ff:focus-within::after {
+        width: 100%;
+      }
+      .ff input,
+      .ff textarea,
+      .ff select {
+        width: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: var(--charcoal);
+      }
+      .ff input::placeholder,
+      .ff textarea::placeholder {
+        color: rgba(0, 0, 0, 0.28);
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .ff textarea {
+        resize: none;
+        min-height: 80px;
+      }
+      .ff.fl {
+        border-right: 1px solid rgba(0, 0, 0, 0.11);
+        padding-right: 14px;
+      }
+      .ff.fr {
+        padding-left: 14px;
+      }
+      .fsub {
+        margin-top: 26px;
+        align-self: flex-start;
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        padding: 13px 44px;
+        font-family: 'Inter', sans-serif;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+          box-shadow 0.3s;
+      }
+      .fsub:hover {
+        background: var(--teal-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(42, 95, 95, 0.25);
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        background: var(--navy);
+        padding: clamp(50px, 6vw, 70px) 5vw 36px;
+        color: rgba(255, 255, 255, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+      .ftop {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: clamp(20px, 3vw, 40px);
+        margin-bottom: 50px;
+      }
+      @media (max-width: 900px) {
+        .ftop {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .ftop {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fbrand .en {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(20px, 3vw, 28px);
+        font-weight: 300;
+        color: #fff;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+      .fbrand .ar {
+        font-size: 13px;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.25);
+        margin-bottom: 14px;
+      }
+      .fbrand p {
+        font-size: 13px;
+        line-height: 1.7;
+        max-width: 260px;
+      }
+      .fcol h4 {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 16px;
+      }
+      .fcol ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        font-size: 13px;
+      }
+      .fcol ul li a {
+        cursor: pointer;
+        transition: color 0.2s;
+        display: inline-block;
+      }
+      .fcol ul li a:hover {
+        color: #fff;
+        transform: translateX(4px);
+        transition:
+          color 0.2s,
+          transform 0.2s;
+      }
+      .fbot {
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        padding-top: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .fbot p {
+        font-size: 12px;
+      }
+      .fsoc {
+        display: flex;
+        gap: 20px;
+      }
+      .fsoc a {
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.3);
+        transition:
+          color 0.25s,
+          transform 0.25s;
+        display: inline-block;
+      }
+      .fsoc a:hover {
+        color: var(--teal);
+        transform: translateY(-2px);
+      }
+      .fwm {
+        writing-mode: vertical-lr;
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(50px, 8vw, 80px);
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.02);
+        letter-spacing: 10px;
+        position: absolute;
+        right: 5vw;
+        bottom: 36px;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+
+      /* ══════════ OUR STORY ══════════ */
+      .story-intro {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(40px, 6vw, 80px);
+        align-items: start;
+        background: #fff;
+      }
+      @media (max-width: 768px) {
+        .story-intro {
+          grid-template-columns: 1fr;
+        }
+      }
+      .story-big-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(36px, 6vw, 64px);
+        font-weight: 300;
+        line-height: 1.1;
+      }
+      .story-big-title em {
+        color: var(--sand);
+        font-style: italic;
+      }
+      .story-big-ar {
+        font-size: 18px;
+        color: rgba(0, 0, 0, 0.22);
+        margin-top: 10px;
+        letter-spacing: 1px;
+      }
+      .story-body p {
+        font-size: 15px;
+        line-height: 1.9;
+        color: var(--mid);
+        margin-bottom: 20px;
+      }
+      .story-video-wrap {
+        position: relative;
+        margin: 0 5vw clamp(60px, 8vw, 100px);
+        overflow: hidden;
+        background: var(--navy);
+      }
+      .story-video-wrap video {
+        width: 100%;
+        display: block;
+        opacity: 0.7;
+        transition: opacity 0.4s;
+      }
+      .story-video-wrap:hover video {
+        opacity: 0.85;
+      }
+      .story-video-wrap::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(13, 34, 51, 0.65), transparent 50%);
+      }
+      .story-video-label {
+        position: absolute;
+        bottom: clamp(20px, 4vw, 44px);
+        left: clamp(24px, 4vw, 50px);
+        z-index: 2;
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(20px, 3.5vw, 38px);
+        font-style: italic;
+        font-weight: 300;
+        color: #fff;
+        max-width: 600px;
+        line-height: 1.3;
+      }
+      .story-video-label span {
+        color: var(--sand);
+      }
+      .story-pillars {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: var(--cream);
+      }
+      .pillars-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+        margin-top: 48px;
+      }
+      @media (max-width: 768px) {
+        .pillars-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pillar {
+        background: #fff;
+        padding: clamp(32px, 4vw, 52px) clamp(24px, 3vw, 40px);
+        border-top: 2px solid transparent;
+        transition:
+          border-color 0.4s,
+          transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+          box-shadow 0.4s;
+      }
+      .pillar:hover {
+        border-color: var(--sand);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+      }
+      .pillar-num {
+        font-family: 'Cormorant Garant', serif;
+        font-size: 58px;
+        font-weight: 300;
+        color: rgba(62, 138, 138, 0.1);
+        line-height: 1;
+        margin-bottom: 16px;
+      }
+      .pillar-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 300;
+        margin-bottom: 14px;
+      }
+      .pillar-body {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--mid);
+      }
+      .story-quote {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: var(--navy);
+        text-align: center;
+      }
+      .story-quote blockquote {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(22px, 4vw, 46px);
+        font-style: italic;
+        font-weight: 300;
+        color: #fff;
+        max-width: 820px;
+        margin: 0 auto 20px;
+        line-height: 1.4;
+      }
+      .story-quote blockquote em {
+        color: var(--sand);
+      }
+      .story-quote cite {
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.38);
+      }
+
+      /* ══════════ PARTNERS ══════════ */
+      .partners-intro {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: #fff;
+      }
+      .partners-intro-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(40px, 6vw, 80px);
+        align-items: start;
+      }
+      @media (max-width: 768px) {
+        .partners-intro-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .partners-intro h2 {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(32px, 5vw, 52px);
+        font-weight: 300;
+        line-height: 1.15;
+        margin-bottom: 24px;
+      }
+      .partners-intro h2 em {
+        color: var(--teal);
+        font-style: italic;
+      }
+      .partners-intro p {
+        font-size: 15px;
+        line-height: 1.9;
+        color: var(--mid);
+        margin-bottom: 18px;
+      }
+      .partners-board {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: var(--cream);
+      }
+      .board-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3px;
+        margin-top: 48px;
+      }
+      @media (max-width: 768px) {
+        .board-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .board-card {
+        background: #fff;
+        overflow: hidden;
+        transition:
+          transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+          box-shadow 0.5s;
+      }
+      .board-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      }
+      .board-card-img {
+        position: relative;
+        aspect-ratio: 4/5;
+        overflow: hidden;
+      }
+      .board-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .board-card:hover .board-card-img img {
+        transform: scale(1.06);
+      }
+      .board-card-img-ov {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(13, 34, 51, 0.8) 0%, transparent 50%);
+      }
+      .board-card-info {
+        padding: clamp(24px, 3vw, 42px);
+      }
+      .board-card-role {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 10px;
+      }
+      .board-card-name {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(24px, 3vw, 36px);
+        font-weight: 300;
+        margin-bottom: 5px;
+      }
+      .board-card-ar {
+        font-size: 15px;
+        color: rgba(0, 0, 0, 0.25);
+        margin-bottom: 18px;
+      }
+      .board-card-bio {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--mid);
+      }
+      .board-card-tag {
+        display: inline-block;
+        margin-top: 16px;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--sand);
+        border: 1px solid rgba(196, 149, 106, 0.38);
+        padding: 4px 12px;
+      }
+      .partners-values {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: var(--charcoal);
+      }
+      .values-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        margin-top: 48px;
+      }
+      @media (max-width: 900px) {
+        .values-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 500px) {
+        .values-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .value-item {
+        background: rgba(255, 255, 255, 0.025);
+        padding: clamp(28px, 4vw, 46px) clamp(20px, 3vw, 34px);
+        border-left: 1px solid rgba(255, 255, 255, 0.05);
+        transition:
+          background 0.4s,
+          transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .value-item:hover {
+        background: rgba(62, 138, 138, 0.12);
+        transform: translateY(-4px);
+      }
+      .value-icon {
+        font-size: 28px;
+        margin-bottom: 18px;
+        color: var(--sand);
+      }
+      .value-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(20px, 2.5vw, 26px);
+        font-weight: 300;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .value-body {
+        font-size: 13px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      /* ══════════ PROJECTS PAGE ══════════ */
+      .proj-filters {
+        padding: clamp(40px, 5vw, 60px) 5vw 0;
+        background: var(--cream);
+      }
+      .filter-bar {
+        display: flex;
+        gap: clamp(8px, 1.5vw, 18px);
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .filter-btn {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 10px 22px;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        font-family: 'Inter', sans-serif;
+        color: var(--mid);
+      }
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+        transform: translateY(-2px);
+      }
+      .proj-full-grid {
+        padding: clamp(36px, 5vw, 60px) 5vw clamp(60px, 8vw, 100px);
+        background: var(--cream);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3px;
+      }
+      @media (max-width: 900px) {
+        .proj-full-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 600px) {
+        .proj-full-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .proj-item {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        aspect-ratio: 1;
+      }
+      .proj-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .proj-item:hover img {
+        transform: scale(1.1);
+      }
+      .proj-item-ov {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(13, 34, 51, 0.88) 0%, transparent 55%);
+        opacity: 0;
+        transition: opacity 0.45s;
+      }
+      .proj-item:hover .proj-item-ov {
+        opacity: 1;
+      }
+      .proj-item-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 22px 24px;
+        transform: translateY(100%);
+        transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .proj-item:hover .proj-item-info {
+        transform: none;
+      }
+      .proj-item-cat {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--sand);
+        margin-bottom: 6px;
+      }
+      .proj-item-name {
+        font-family: 'Cormorant Garant', serif;
+        font-size: 22px;
+        font-weight: 300;
+        color: #fff;
+      }
+      .proj-item-loc {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 4px;
+      }
+      .proj-item-tag {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--sand);
+        border: 1px solid rgba(196, 149, 106, 0.4);
+        padding: 3px 9px;
+      }
+
+      /* ══════════ CONTACT PAGE ══════════ */
+      .contact-full {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: #fff;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: clamp(40px, 6vw, 80px);
+        align-items: start;
+      }
+      @media (max-width: 768px) {
+        .contact-full {
+          grid-template-columns: 1fr;
+        }
+      }
+      .contact-info h2 {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(34px, 5vw, 56px);
+        font-weight: 300;
+        line-height: 1.1;
+        margin-bottom: 8px;
+      }
+      .contact-info h2 em {
+        color: var(--teal);
+        font-style: italic;
+      }
+      .contact-info-ar {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.22);
+        margin-bottom: 40px;
+        letter-spacing: 1px;
+      }
+      .contact-block {
+        margin-bottom: 28px;
+      }
+      .contact-block-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 10px;
+      }
+      .contact-block-val {
+        font-size: 15px;
+        line-height: 1.9;
+        color: var(--mid);
+      }
+      .contact-block-val a {
+        color: var(--charcoal);
+        transition: color 0.2s;
+      }
+      .contact-block-val a:hover {
+        color: var(--teal);
+      }
+      .contact-map {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: var(--cream);
+        overflow: hidden;
+        margin-top: 36px;
+      }
+      .contact-map iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        filter: saturate(0.45) opacity(0.8);
+      }
+      .contact-form-wrap h3 {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(26px, 3.5vw, 40px);
+        font-weight: 300;
+        margin-bottom: 6px;
+      }
+      .contact-form-wrap h3 em {
+        color: var(--teal);
+        font-style: italic;
+      }
+      .contact-form-wrap p {
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--mid);
+        margin-bottom: 36px;
+      }
+      .cf {
+        display: flex;
+        flex-direction: column;
+      }
+      .cf .frow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .cf .ff {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.11);
+        padding: 14px 0;
+        position: relative;
+      }
+      .cf .ff::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--teal);
+        transition: width 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .cf .ff:focus-within::after {
+        width: 100%;
+      }
+      .cf .ff input,
+      .cf .ff textarea,
+      .cf .ff select {
+        width: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: var(--charcoal);
+      }
+      .cf .ff input::placeholder,
+      .cf .ff textarea::placeholder {
+        color: rgba(0, 0, 0, 0.28);
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .cf .ff select {
+        color: rgba(0, 0, 0, 0.38);
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+      }
+      .cf .ff textarea {
+        resize: none;
+        min-height: 90px;
+      }
+      .cf .ff.fl {
+        border-right: 1px solid rgba(0, 0, 0, 0.11);
+        padding-right: 14px;
+      }
+      .cf .ff.fr {
+        padding-left: 14px;
+      }
+      .cf .fsub {
+        margin-top: 28px;
+        align-self: flex-start;
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        padding: 14px 44px;
+        font-family: 'Inter', sans-serif;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+          box-shadow 0.3s;
+      }
+      .cf .fsub:hover {
+        background: var(--teal-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(42, 95, 95, 0.22);
+      }
+      .contact-social {
+        padding: clamp(50px, 6vw, 80px) 5vw;
+        background: var(--cream);
+        text-align: center;
+      }
+      .social-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(28px, 4vw, 44px);
+        font-weight: 300;
+        margin-bottom: 8px;
+      }
+      .social-title em {
+        color: var(--sand);
+        font-style: italic;
+      }
+      .social-sub {
+        font-size: 13px;
+        color: var(--mid);
+        margin-bottom: 36px;
+      }
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: clamp(16px, 3vw, 32px);
+        flex-wrap: wrap;
+      }
+      .social-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--mid);
+        transition:
+          color 0.3s,
+          transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .social-link:hover {
+        color: var(--teal);
+        transform: translateY(-4px);
+      }
+      .social-link-icon {
+        width: 52px;
+        height: 52px;
+        border: 1px solid rgba(0, 0, 0, 0.13);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .social-link:hover .social-link-icon {
+        border-color: var(--teal);
+        background: rgba(62, 138, 138, 0.07);
+      }
+
+      /* ── PYRAMID RIWAQ LETTERS ── */
+      .pyr-riwaq {
+        position: absolute;
+        bottom: 5vh;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        pointer-events: none;
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 3px;
+        white-space: nowrap;
+      }
+      .prl {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(20px, 2.2vw, 30px);
+        font-weight: 300;
+        color: rgba(196, 149, 106, 0.92);
+        display: inline-block;
+        animation: pyrLetterFloat 3.6s var(--d, 0s) ease-in-out infinite;
+      }
+      @keyframes pyrLetterFloat {
+        0%,
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        38% {
+          opacity: 0;
+          transform: translateY(-16px);
+        }
+        39% {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        78% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── TEXT SPLIT ANIMATION ── */
+      .split-word {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: bottom;
+      }
+      .split-char {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(100%);
+        transition:
+          opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .split-char.v {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* ── COUNT UP ── */
+      .count-num {
+        display: inline-block;
+      }
+
+      /* ── MARQUEE ── */
+      .marquee-wrap {
+        overflow: hidden;
+        background: var(--teal);
+        padding: 14px 0;
+      }
+      .marquee-track {
+        display: flex;
+        gap: 0;
+        white-space: nowrap;
+        animation: marqueeRun 22s linear infinite;
+      }
+      .marquee-item {
+        font-family: 'Cormorant Garant', serif;
+        font-size: 18px;
+        font-weight: 300;
+        color: #fff;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 0 40px;
+        opacity: 0.85;
+      }
+      .marquee-item span {
+        color: rgba(255, 255, 255, 0.45);
+        padding: 0 16px;
+      }
+      @keyframes marqueeRun {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* ── PAGE TRANSITION ── */
+      #page-wipe {
+        position: fixed;
+        inset: 0;
+        background: var(--navy);
+        z-index: 8000;
+        transform: scaleY(0);
+        transform-origin: bottom;
+        pointer-events: none;
+      }
+      #page-wipe.wipe-in {
+        animation: wipeIn 0.4s cubic-bezier(0.83, 0, 0.17, 1) forwards;
+      }
+      #page-wipe.wipe-out {
+        animation: wipeOut 0.4s cubic-bezier(0.83, 0, 0.17, 1) forwards;
+      }
+      @keyframes wipeIn {
+        to {
+          transform: scaleY(1);
+        }
+      }
+      @keyframes wipeOut {
+        from {
+          transform: scaleY(1);
+          transform-origin: top;
+        }
+        to {
+          transform: scaleY(0);
+          transform-origin: top;
+        }
+      }
+
+      /* ── NEWS section ── */
+      .news {
+        padding: clamp(60px, 8vw, 100px) 5vw;
+        background: #fff;
+      }
+      .news-title {
+        font-family: 'Cormorant Garant', serif;
+        font-size: clamp(36px, 5vw, 52px);
+        font-weight: 300;
+        color: var(--charcoal);
+      }
+      .news-title em {
+        color: var(--sand);
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+    <div id="page-wipe"></div>
+
+    <div id="loader">
+      <div class="loader-logo">RIWAQ</div>
+      <div class="loader-ar">رواق — Developments</div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+    </div>
+
+    <canvas
+      id="particles-canvas"
+      style="position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 2s"
+    ></canvas>
+
+    <div id="prog"></div>
+
+    <nav id="sitenav">
+      <div class="nav-logo" onclick="goPage('home')">
+        <div class="en">RIWAQ</div>
+        <div class="ar">رواق — Developments</div>
+      </div>
+      <ul class="nav-links">
+        <li><a onclick="goPage('home')" data-page="home">Riwaq</a></li>
+        <li><a onclick="goPage('story')" data-page="story">Our Story</a></li>
+        <li><a onclick="goPage('partners')" data-page="partners">Our Partners</a></li>
+        <li><a onclick="goPage('projects')" data-page="projects">Our Projects</a></li>
+        <li><a onclick="goPage('contact')" data-page="contact">Contact Us</a></li>
+      </ul>
+      <div class="nav-burger"><span></span><span></span><span></span></div>
+    </nav>
+
+    <!-- ══ HOME ══ -->
+    <div id="page-home" class="page active">
+      <section class="hero">
+        <div class="hero-fb"></div>
+        <video autoplay muted loop playsinline>
+          <source src="./12006396_1920_1080_24fps.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-ov"></div>
+        <div class="hero-pyr">
+          <svg viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#C4956A" stop-opacity="0" />
+                <stop offset="50%" stop-color="#C4956A" stop-opacity="1" />
+                <stop offset="100%" stop-color="#C4956A" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <polygon class="pf" points="720,8 380,178 1060,178" fill="rgba(196,149,106,0.05)" />
+            <polyline class="ps" points="380,178 720,8 1060,178" fill="none" stroke="url(#sg)" stroke-width="1.5" />
+            <polygon class="pf" points="720,44 530,178 910,178" fill="rgba(196,149,106,0.038)" />
+            <polyline
+              class="ps2"
+              points="530,178 720,44 910,178"
+              fill="none"
+              stroke="url(#sg)"
+              stroke-width="1"
+              opacity=".5"
+            />
+            <polygon class="pf" points="720,78 630,178 810,178" fill="rgba(196,149,106,0.025)" />
+            <polyline
+              class="ps3"
+              points="630,178 720,78 810,178"
+              fill="none"
+              stroke="url(#sg)"
+              stroke-width=".7"
+              opacity=".32"
+            />
+          </svg>
+        </div>
+
+        <div class="hero-content">
+          <p class="hero-eyebrow">Riwaq Developments</p>
+          <h1 class="hero-title">Under a Roof<br />of <em>Comfort</em></h1>
+          <p class="hero-ar">تحت سقف من الراحة</p>
+          <div class="hero-sc"><span class="sc-line"></span>Architecture Built Around People</div>
+        </div>
+        <div class="scroll-indicator">
+          <span>Scroll</span>
+          <div class="scroll-dot"></div>
+        </div>
+      </section>
+
+      <div class="marquee-wrap">
+        <div class="marquee-track">
+          <span class="marquee-item">Riwaq Developments<span>◈</span></span
+          ><span class="marquee-item">Architecture Built Around People<span>◈</span></span
+          ><span class="marquee-item">رواق للتطوير<span>◈</span></span
+          ><span class="marquee-item">Under a Roof of Comfort<span>◈</span></span
+          ><span class="marquee-item">تحت سقف من الراحة<span>◈</span></span
+          ><span class="marquee-item">Riwaq Developments<span>◈</span></span
+          ><span class="marquee-item">Architecture Built Around People<span>◈</span></span
+          ><span class="marquee-item">رواق للتطوير<span>◈</span></span
+          ><span class="marquee-item">Under a Roof of Comfort<span>◈</span></span
+          ><span class="marquee-item">تحت سقف من الراحة<span>◈</span></span>
+        </div>
+      </div>
+
+      <section class="about">
+        <div class="about-img rl">
+          <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=900&q=80" alt="Arch" />
+          <div class="about-img-glow"></div>
+          <div class="about-img-line"></div>
+        </div>
+        <div class="about-text rr">
+          <div class="sec-label">About Riwaq</div>
+          <h2 class="about-title">Spaces Built<br />Around <em>People</em></h2>
+          <p class="about-ar">مساحات صُمِّمت من أجل الإنسان</p>
+          <p class="about-body">
+            At Riwaq, we create places shaped by thoughtful architecture, human experience, and a deep sense of comfort.
+            Every detail is designed to bring clarity, calm, and meaning to the way people live, work, and connect with
+            their surroundings.
+          </p>
+          <a class="about-lnk" onclick="goPage('story')">Our Story</a>
+        </div>
+      </section>
+
+      <div class="s-div" style="background: #fff">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+
+      <div class="tagline-band r">
+        <p class="tag-en">" Under a Roof of Comfort "</p>
+        <p class="tag-ar">تحت سقف من الراحة</p>
+        <p class="tag-by">— Riwaq Developments</p>
+      </div>
+
+      <div class="s-div" style="background: var(--cream)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+
+      <section class="projects">
+        <div class="sec-hdr r">
+          <div>
+            <div class="sec-label">Our Projects</div>
+            <h2 class="proj-title">Our <em>Developments</em></h2>
+          </div>
+          <p class="stay-lbl">Stay<br />Tuned</p>
+        </div>
+        <div class="pgrid">
+          <div class="pcard rl">
+            <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80" alt="" />
+            <div class="pcard-ov"></div>
+            <div class="pcard-info">
+              <p class="pcard-sub">New Cairo</p>
+              <p class="pcard-name">The Arch Residences</p>
+              <span class="pcard-tag">Residential</span>
+            </div>
+          </div>
+          <div class="pcard rs d1">
+            <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" alt="" />
+            <div class="pcard-ov"></div>
+            <div class="pcard-info">
+              <p class="pcard-sub">Downtown</p>
+              <p class="pcard-name">Sahn Tower</p>
+              <span class="pcard-tag">Mixed Use</span>
+            </div>
+          </div>
+          <div class="pcard rs d2">
+            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80" alt="" />
+            <div class="pcard-ov"></div>
+            <div class="pcard-info">
+              <p class="pcard-sub">North Coast</p>
+              <p class="pcard-name">Bab Al Nour</p>
+              <span class="pcard-tag">Coastal</span>
+            </div>
+          </div>
+          <div class="pcard rs d3">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="" />
+            <div class="pcard-ov"></div>
+            <div class="pcard-info">
+              <p class="pcard-sub">6th October</p>
+              <p class="pcard-name">Rawabi Heights</p>
+              <span class="pcard-tag">Compound</span>
+            </div>
+          </div>
+          <div class="pcard rs d4">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80" alt="" />
+            <div class="pcard-ov"></div>
+            <div class="pcard-info">
+              <p class="pcard-sub">Sheikh Zayed</p>
+              <p class="pcard-name">Al Maqam</p>
+              <span class="pcard-tag">Luxury</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="s-div" style="background: var(--charcoal)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+
+      <section class="stats">
+        <div class="stats-bg-txt">RIWAQ رواق</div>
+        <p class="stats-label r">Our Success</p>
+        <div class="stats-grid">
+          <div class="stat-item r d1" style="--bw: 70%">
+            <p class="stat-num"><span class="count-num" data-target="15">0</span><span>+</span></p>
+            <p class="stat-lbl">Years</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+          <div class="stat-item r d2" style="--bw: 85%">
+            <p class="stat-num"><span class="count-num" data-target="210">0</span><span>+</span></p>
+            <p class="stat-lbl">Visitors</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+          <div class="stat-item r d3" style="--bw: 50%">
+            <p class="stat-num"><span class="count-num" data-target="10">0</span></p>
+            <p class="stat-lbl">Developments</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+          <div class="stat-item r d4" style="--bw: 95%">
+            <p class="stat-num"><span class="count-num" data-target="4000">0</span><span>+</span></p>
+            <p class="stat-lbl">Clients</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="s-div" style="background: #fff">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+
+      <section class="news">
+        <div class="sec-label r">Latest News</div>
+        <h2 class="news-title r d1">Stay <em>Tuned</em></h2>
+      </section>
+
+      <div class="s-div" style="background: var(--cream)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+
+      <section class="contact-wrap">
+        <div class="contact-left rl">
+          <h2>Let's <em>Talk!</em></h2>
+          <p>For inquiries, please reach us</p>
+          <div class="c-detail">
+            Website: <a href="#">www.riwaq-dev.com</a><br />Email: <a href="#">info@riwaq-dev.com</a><br />Hotline:
+            <a href="#">17569</a><br /><br />Address: Ontario Pearl, Yousuf Street,<br />Alexandria Egypt, 75148
+          </div>
+        </div>
+        <div class="cform rr">
+          <div class="frow">
+            <div class="ff fl"><input type="text" placeholder="Your Name" /></div>
+            <div class="ff fr"><input type="email" placeholder="Your Email" /></div>
+          </div>
+          <div class="ff"><input type="tel" placeholder="Your Mobile Number" /></div>
+          <div class="ff"><textarea placeholder="Your Message"></textarea></div>
+          <button class="fsub">Send</button>
+        </div>
+      </section>
+      <div class="footer-slot"></div>
+    </div>
+
+    <!-- ══ OUR STORY ══ -->
+    <div id="page-story" class="page">
+      <div class="page-hero">
+        <div
+          class="page-hero-bg"
+          style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1400&q=80')"
+        ></div>
+        <div class="page-hero-ov"></div>
+        <div class="page-hero-content">
+          <p class="page-hero-eyebrow">Our Story</p>
+          <h1 class="page-hero-title">Riwaq <em>Developments</em></h1>
+          <p class="page-hero-ar">قصتنا — رواق للتطوير</p>
+        </div>
+      </div>
+      <section class="story-intro">
+        <div class="rl">
+          <div class="sec-label">Who We Are</div>
+          <h2 class="story-big-title">Architecture<br />is a <em>Human Act</em></h2>
+          <p class="story-big-ar">العمارة فعل إنساني قبل أن تكون هندسة</p>
+        </div>
+        <div class="story-body rr">
+          <p>
+            Riwaq Developments is the natural result of years of experience in real estate planning and development. Our
+            journey began with understanding land, reading place, and envisioning a future that can truly be lived.
+          </p>
+          <p>
+            At Riwaq, nothing is left to coincidence. Land is defined. Vision is defined. Direction is defined. Every
+            line we draw is a commitment — to people, to place, and to time.
+          </p>
+          <p>
+            We plan today to draw a future that is more balanced, calmer, and more livable. We place people at the heart
+            of every project, creating spaces that simplify life, enhance comfort, and provide security for families and
+            future generations.
+          </p>
+          <p>
+            We also believe that development carries a responsibility toward the community — contributing to local
+            growth, strengthening belonging, and improving quality of life for everyone who lives, works, or visits our
+            projects.
+          </p>
+        </div>
+      </section>
+      <div class="s-div" style="background: #fff">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+      <div class="story-video-wrap r">
+        <video autoplay muted loop playsinline>
+          <source
+            src="https://cdn.coverr.co/videos/coverr-an-aerial-view-of-a-modern-building-2648/1080p.mp4"
+            type="video/mp4"
+          />
+        </video>
+        <div class="story-video-label">
+          For us, planning is a <span>human act</span><br />before it is an engineering process.
+        </div>
+      </div>
+      <section class="story-pillars">
+        <div class="sec-label r">Our Foundation</div>
+        <h2
+          class="r d1"
+          style="font-family: 'Cormorant Garant', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 300"
+        >
+          What We <em style="color: var(--teal); font-style: italic">Stand For</em>
+        </h2>
+        <div class="pillars-grid">
+          <div class="pillar rs d1">
+            <div class="pillar-num">01</div>
+            <h3 class="pillar-title">Human-Centered Design</h3>
+            <p class="pillar-body">
+              Every space is shaped by how people live, move, and connect. We design for life before we design for
+              aesthetics.
+            </p>
+          </div>
+          <div class="pillar rs d2">
+            <div class="pillar-num">02</div>
+            <h3 class="pillar-title">Purposeful Architecture</h3>
+            <p class="pillar-body">
+              We bring clarity, calm, and meaning to every detail — from entrance gates to interior light — because
+              place shapes experience.
+            </p>
+          </div>
+          <div class="pillar rs d3">
+            <div class="pillar-num">03</div>
+            <h3 class="pillar-title">Community Responsibility</h3>
+            <p class="pillar-body">
+              Development carries a duty to the surrounding community. We invest in local growth, belonging, and quality
+              of life for all.
+            </p>
+          </div>
+        </div>
+      </section>
+      <div class="s-div" style="background: var(--charcoal)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+      <section class="story-quote">
+        <div class="r">
+          <blockquote>"Because how a place is <em>drawn</em> determines how life unfolds within it."</blockquote>
+          <cite>— Riwaq Developments</cite>
+        </div>
+      </section>
+      <section class="stats">
+        <div class="stats-bg-txt">RIWAQ رواق</div>
+        <p class="stats-label r">Our Success</p>
+        <div class="stats-grid">
+          <div class="stat-item r d1" style="--bw: 70%">
+            <p class="stat-num"><span class="count-num" data-target="15">0</span><span>+</span></p>
+            <p class="stat-lbl">Years</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+          <div class="stat-item r d2" style="--bw: 85%">
+            <p class="stat-num"><span class="count-num" data-target="210">0</span><span>+</span></p>
+            <p class="stat-lbl">Visitors</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+          <div class="stat-item r d3" style="--bw: 50%">
+            <p class="stat-num"><span class="count-num" data-target="10">0</span></p>
+            <p class="stat-lbl">Developments</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+          <div class="stat-item r d4" style="--bw: 95%">
+            <p class="stat-num"><span class="count-num" data-target="4000">0</span><span>+</span></p>
+            <p class="stat-lbl">Clients</p>
+            <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+          </div>
+        </div>
+      </section>
+      <div class="footer-slot"></div>
+    </div>
+
+    <!-- ══ PARTNERS ══ -->
+    <div id="page-partners" class="page">
+      <div class="page-hero">
+        <div
+          class="page-hero-bg"
+          style="background-image: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=80')"
+        ></div>
+        <div class="page-hero-ov"></div>
+        <div class="page-hero-content">
+          <p class="page-hero-eyebrow">Board Members</p>
+          <h1 class="page-hero-title">Our <em>Partners</em></h1>
+          <p class="page-hero-ar">شركاؤنا — مجلس الإدارة</p>
+        </div>
+      </div>
+      <section class="partners-intro">
+        <div class="partners-intro-grid">
+          <div class="rl">
+            <div class="sec-label">About The Founders</div>
+            <h2>Built on Decades of <em>Real Estate Mastery</em></h2>
+          </div>
+          <div class="rr">
+            <p>
+              Riwaq Developments was established by a recognized name in real estate development and investment with
+              more than two decades of experience, delivering a series of projects that left a lasting impact across
+              various Egyptian locations.
+            </p>
+            <p>
+              The company was co-founded by a leading entrepreneur in the real estate sector with over ten years of
+              experience, having successfully developed numerous residential, commercial, and service projects.
+            </p>
+            <p>
+              Riwaq is built upon the combined strength of administrative and engineering expertise, reflected in a
+              portfolio exceeding twenty projects across multiple Egyptian governorates.
+            </p>
+          </div>
+        </div>
+      </section>
+      <div class="s-div" style="background: var(--cream)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+      <section class="partners-board">
+        <div class="sec-label r">Leadership</div>
+        <h2
+          class="r d1"
+          style="font-family: 'Cormorant Garant', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 300"
+        >
+          Board <em style="color: var(--teal); font-style: italic">Members</em>
+        </h2>
+        <div class="board-grid">
+          <div class="board-card rl">
+            <div class="board-card-img">
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" alt="" />
+              <div class="board-card-img-ov"></div>
+            </div>
+            <div class="board-card-info">
+              <p class="board-card-role">Chairman & Co-Founder</p>
+              <h3 class="board-card-name">Eng. Ahmad Al-Riwaq</h3>
+              <p class="board-card-ar">م. أحمد الرواق</p>
+              <p class="board-card-bio">
+                A recognized name in real estate development with more than two decades of experience. Through his
+                earlier ventures, he delivered projects that left a lasting impact across various Egyptian locations,
+                building a reputation for quality, vision, and integrity.
+              </p>
+              <span class="board-card-tag">20+ Years Experience</span>
+            </div>
+          </div>
+          <div class="board-card rr">
+            <div class="board-card-img">
+              <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80" alt="" />
+              <div class="board-card-img-ov"></div>
+            </div>
+            <div class="board-card-info">
+              <p class="board-card-role">CEO & Co-Founder</p>
+              <h3 class="board-card-name">Eng. Sayed Al-Masri</h3>
+              <p class="board-card-ar">م. سيد المصري</p>
+              <p class="board-card-bio">
+                A leading entrepreneur in the real estate sector with over ten years of experience. He successfully
+                developed numerous residential, commercial, and service projects, establishing a track record of
+                excellence in design and delivery across Egypt.
+              </p>
+              <span class="board-card-tag">10+ Years Experience</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="s-div" style="background: var(--charcoal)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+      <section class="partners-values">
+        <p class="stats-label r">Our Values</p>
+        <h2
+          class="r d1"
+          style="
+            font-family: 'Cormorant Garant', serif;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 300;
+            color: #fff;
+            margin-top: 0;
+          "
+        >
+          What Drives <em style="color: var(--sand); font-style: italic">Our Work</em>
+        </h2>
+        <div class="values-grid">
+          <div class="value-item rs d1">
+            <div class="value-icon">◈</div>
+            <h3 class="value-title">Vision</h3>
+            <p class="value-body">
+              We see beyond the present — planning spaces that serve generations, not just seasons.
+            </p>
+          </div>
+          <div class="value-item rs d2">
+            <div class="value-icon">◇</div>
+            <h3 class="value-title">Integrity</h3>
+            <p class="value-body">
+              Every commitment we make is honored. Our word is our contract, our quality is our signature.
+            </p>
+          </div>
+          <div class="value-item rs d3">
+            <div class="value-icon">◉</div>
+            <h3 class="value-title">Community</h3>
+            <p class="value-body">
+              Development is a responsibility toward people and place, not just a commercial transaction.
+            </p>
+          </div>
+          <div class="value-item rs d4">
+            <div class="value-icon">◎</div>
+            <h3 class="value-title">Excellence</h3>
+            <p class="value-body">
+              We hold every detail to the highest standard — from the master plan to the finishing stone.
+            </p>
+          </div>
+        </div>
+      </section>
+      <div class="footer-slot"></div>
+    </div>
+
+    <!-- ══ PROJECTS ══ -->
+    <div id="page-projects" class="page">
+      <div class="page-hero">
+        <div
+          class="page-hero-bg"
+          style="background-image: url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=80')"
+        ></div>
+        <div class="page-hero-ov"></div>
+        <div class="page-hero-content">
+          <p class="page-hero-eyebrow">Portfolio</p>
+          <h1 class="page-hero-title">Our <em>Developments</em></h1>
+          <p class="page-hero-ar">مشاريعنا — أعمالنا</p>
+        </div>
+      </div>
+      <div class="proj-filters">
+        <div class="sec-label r" style="margin-bottom: 18px">Filter Projects</div>
+        <div class="filter-bar r d1">
+          <button class="filter-btn active" onclick="filterProjects('all', this)">All</button>
+          <button class="filter-btn" onclick="filterProjects('commercial', this)">Commercial</button>
+          <button class="filter-btn" onclick="filterProjects('residential', this)">Residences</button>
+          <button class="filter-btn" onclick="filterProjects('mixed', this)">Mixed-Use</button>
+          <button class="filter-btn" onclick="filterProjects('coastal', this)">Coastal</button>
+        </div>
+      </div>
+      <div class="proj-full-grid" id="projects-grid">
+        <div class="proj-item rs d1" data-cat="residential">
+          <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Residential</p>
+            <p class="proj-item-name">The Arch Residences</p>
+            <p class="proj-item-loc">New Cairo, Egypt</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d2" data-cat="commercial">
+          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Commercial</p>
+            <p class="proj-item-name">Sahn Tower</p>
+            <p class="proj-item-loc">Downtown Cairo</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d3" data-cat="coastal">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Coastal Villa</p>
+            <p class="proj-item-name">Bab Al Nour</p>
+            <p class="proj-item-loc">North Coast</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d1" data-cat="residential">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Compound</p>
+            <p class="proj-item-name">Rawabi Heights</p>
+            <p class="proj-item-loc">6th October City</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d2" data-cat="mixed">
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Luxury Mixed-Use</p>
+            <p class="proj-item-name">Al Maqam</p>
+            <p class="proj-item-loc">Sheikh Zayed</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d3" data-cat="commercial">
+          <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Commercial</p>
+            <p class="proj-item-name">The Colonnade</p>
+            <p class="proj-item-loc">Smart Village</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d1" data-cat="residential">
+          <img src="https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Residential</p>
+            <p class="proj-item-name">Qasr Al Nil</p>
+            <p class="proj-item-loc">Alexandria</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d2" data-cat="mixed">
+          <img src="https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Mixed-Use</p>
+            <p class="proj-item-name">Midan Hub</p>
+            <p class="proj-item-loc">Heliopolis</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+        <div class="proj-item rs d3" data-cat="coastal">
+          <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=600&q=80" alt="" />
+          <div class="proj-item-ov"></div>
+          <div class="proj-item-info">
+            <p class="proj-item-cat">Coastal</p>
+            <p class="proj-item-name">Sahel Retreat</p>
+            <p class="proj-item-loc">Marsa Matrouh</p>
+            <span class="proj-item-tag">View Details</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-slot"></div>
+    </div>
+
+    <!-- ══ CONTACT ══ -->
+    <div id="page-contact" class="page">
+      <div class="page-hero">
+        <div
+          class="page-hero-bg"
+          style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80')"
+        ></div>
+        <div class="page-hero-ov"></div>
+        <div class="page-hero-content">
+          <p class="page-hero-eyebrow">Get In Touch</p>
+          <h1 class="page-hero-title">Let's <em>Talk!</em></h1>
+          <p class="page-hero-ar">تواصل معنا — نحن هنا</p>
+        </div>
+      </div>
+      <section class="contact-full">
+        <div class="contact-info rl">
+          <h2>Find <em>Us</em></h2>
+          <p class="contact-info-ar">معلومات التواصل</p>
+          <div class="contact-block">
+            <p class="contact-block-label">Website</p>
+            <p class="contact-block-val"><a href="#">www.riwaq-dev.com</a></p>
+          </div>
+          <div class="contact-block">
+            <p class="contact-block-label">Email</p>
+            <p class="contact-block-val"><a href="mailto:info@riwaq-dev.com">info@riwaq-dev.com</a></p>
+          </div>
+          <div class="contact-block">
+            <p class="contact-block-label">Hotline</p>
+            <p class="contact-block-val"><a href="tel:17569">17569</a></p>
+          </div>
+          <div class="contact-block">
+            <p class="contact-block-label">Phone</p>
+            <p class="contact-block-val"><a href="tel:+20031234567">+20 (03) 123-4567</a></p>
+          </div>
+          <div class="contact-block">
+            <p class="contact-block-label">Address</p>
+            <p class="contact-block-val">Ontario Pearl, Yousuf Street,<br />Alexandria, Egypt 75148</p>
+          </div>
+          <div class="contact-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d14047!2d29.9553!3d31.2001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2seg!4v1"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+        <div class="contact-form-wrap rr">
+          <h3>Send Us a <em>Message</em></h3>
+          <p>We respond within 24 hours</p>
+          <div class="cf">
+            <div class="frow">
+              <div class="ff fl"><input type="text" placeholder="Your Name" /></div>
+              <div class="ff fr"><input type="email" placeholder="Your Email" /></div>
+            </div>
+            <div class="ff"><input type="tel" placeholder="Your Mobile Number" /></div>
+            <div class="ff">
+              <select>
+                <option value="" disabled selected>Area of Interest</option>
+                <option>Residential</option>
+                <option>Commercial</option>
+                <option>Mixed-Use</option>
+                <option>Coastal</option>
+                <option>General Inquiry</option>
+              </select>
+            </div>
+            <div class="ff"><textarea placeholder="Your Message"></textarea></div>
+            <button class="fsub">Send Message</button>
+          </div>
+        </div>
+      </section>
+      <div class="s-div" style="background: var(--cream)">
+        <div class="s-div-inner">
+          <div class="sdl"></div>
+          <div class="sdd"></div>
+          <div class="sdl"></div>
+        </div>
+      </div>
+      <section class="contact-social">
+        <h2 class="social-title r">Follow Our <em>Journey</em></h2>
+        <p class="social-sub r d1">Stay connected with our latest developments</p>
+        <div class="social-links r d2">
+          <a href="#" class="social-link"
+            ><div class="social-link-icon">f</div>
+            <span>Facebook</span></a
+          >
+          <a href="#" class="social-link"
+            ><div class="social-link-icon">in</div>
+            <span>Instagram</span></a
+          >
+          <a href="#" class="social-link"
+            ><div class="social-link-icon">Li</div>
+            <span>LinkedIn</span></a
+          >
+          <a href="#" class="social-link"
+            ><div class="social-link-icon">X</div>
+            <span>Twitter</span></a
+          >
+          <a href="#" class="social-link"
+            ><div class="social-link-icon">Yt</div>
+            <span>YouTube</span></a
+          >
+        </div>
+      </section>
+      <div class="footer-slot"></div>
+    </div>
+
+    <template id="footer-tpl">
+      <footer>
+        <div class="ftop">
+          <div class="fbrand">
+            <div class="en">RIWAQ</div>
+            <div class="ar">رواق — Developments</div>
+            <p>Creating human-centered spaces in Egypt's most sought-after locations.</p>
+          </div>
+          <div class="fcol">
+            <h4>Company</h4>
+            <ul>
+              <li><a onclick="goPage('home')">Riwaq</a></li>
+              <li><a onclick="goPage('story')">Our Story</a></li>
+              <li><a onclick="goPage('partners')">Our Partners</a></li>
+            </ul>
+          </div>
+          <div class="fcol">
+            <h4>Projects</h4>
+            <ul>
+              <li><a onclick="goPage('projects')">The Arch Residences</a></li>
+              <li><a onclick="goPage('projects')">Sahn Tower</a></li>
+              <li><a onclick="goPage('projects')">Bab Al Nour</a></li>
+              <li><a onclick="goPage('projects')">Rawabi Heights</a></li>
+            </ul>
+          </div>
+          <div class="fcol">
+            <h4>Contact</h4>
+            <ul>
+              <li><a href="#">www.riwaq-dev.com</a></li>
+              <li><a href="#">info@riwaq-dev.com</a></li>
+              <li>Hotline: 17569</li>
+              <li>+20 (03) 123-4567</li>
+            </ul>
+          </div>
+        </div>
+        <div class="fbot">
+          <p>© 2026 Riwaq Developments. All rights reserved.</p>
+          <div class="fsoc"><a href="#">FB</a><a href="#">IG</a><a href="#">LI</a><a href="#">TW</a></div>
+        </div>
+        <div class="fwm">رواق</div>
+      </footer>
+    </template>
+
+    <script>
+      /* ── CURSOR ── */
+      const cur = document.getElementById('cursor');
+      const ring = document.getElementById('cursor-ring');
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX;
+        my = e.clientY;
+        cur.style.left = mx + 'px';
+        cur.style.top = my + 'px';
+      });
+      function animRing() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+        requestAnimationFrame(animRing);
+      }
+      animRing();
+      document.querySelectorAll('a,button,.pcard,.proj-item,.board-card,.pillar,.value-item,.nav-logo').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          cur.style.width = '20px';
+          cur.style.height = '20px';
+          ring.style.width = '60px';
+          ring.style.height = '60px';
+          ring.style.opacity = '.4';
+        });
+        el.addEventListener('mouseleave', () => {
+          cur.style.width = '10px';
+          cur.style.height = '10px';
+          ring.style.width = '36px';
+          ring.style.height = '36px';
+          ring.style.opacity = '1';
+        });
+      });
+
+      /* ── PARTICLES (floating dots) ── */
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let pts = [];
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      for (let i = 0; i < 55; i++) {
+        pts.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+          o: Math.random() * 0.4 + 0.05,
+        });
+      }
+      function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pts.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(196,149,106,${p.o})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(drawParticles);
+      }
+      drawParticles();
+
+      /* ── LOADER ── */
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          document.getElementById('loader').classList.add('out');
+          canvas.style.opacity = '.45';
+          setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+          }, 900);
+          initPage('home');
+        }, 2200);
+      });
+
+      /* ── PAGE WIPE TRANSITION ── */
+      let currentPage = 'home';
+      function goPage(page) {
+        if (page === currentPage) return;
+        const wipe = document.getElementById('page-wipe');
+        wipe.className = 'wipe-in';
+        setTimeout(() => {
+          showPage(page);
+          wipe.className = 'wipe-out';
+        }, 400);
+      }
+
+      function showPage(page) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.page === page));
+        const nav = document.getElementById('sitenav');
+        nav.classList.remove('scrolled');
+        nav.classList.toggle('solid', page !== 'home');
+        window.scrollTo({top: 0, behavior: 'instant'});
+        currentPage = page;
+        setTimeout(() => initPage(page), 80);
+      }
+
+      function initPage(page) {
+        /* reset reveals */
+        document
+          .querySelectorAll(
+            '#page-' + page + ' .r,#page-' + page + ' .rl,#page-' + page + ' .rr,#page-' + page + ' .rs',
+          )
+          .forEach(el => el.classList.remove('v'));
+        document.querySelectorAll('#page-' + page + ' .stat-item').forEach(el => el.classList.remove('v'));
+        document.querySelectorAll('#page-' + page + ' .stat-bar-fill').forEach(el => (el.style.width = '0'));
+        /* reset count-up */
+        document.querySelectorAll('#page-' + page + ' .count-num').forEach(el => {
+          el.textContent = '0';
+          el.dataset.counted = '';
+        });
+        /* hero kenburns */
+        const ph = document.querySelector('#page-' + page + ' .page-hero');
+        if (ph) {
+          setTimeout(() => ph.classList.add('ready'), 60);
+        } else {
+          const ph2 = document.querySelector('#page-' + page + ' .page-hero');
+          if (ph2) ph2.classList.remove('ready');
+        }
+        checkReveal(page);
+      }
+
+      function checkReveal(page) {
+        const pg = document.getElementById('page-' + page);
+        if (!pg) return;
+        pg.querySelectorAll('.r,.rl,.rr,.rs').forEach(el => {
+          if (el.getBoundingClientRect().top < window.innerHeight * 0.88) el.classList.add('v');
+        });
+        pg.querySelectorAll('.sec-label').forEach(el => {
+          if (el.getBoundingClientRect().top < window.innerHeight * 0.88) el.classList.add('v');
+        });
+        const tb = pg.querySelector('.tagline-band');
+        if (tb && tb.getBoundingClientRect().top < window.innerHeight * 0.88) tb.classList.add('v');
+        /* stat items + count-up */
+        pg.querySelectorAll('.stat-item').forEach(el => {
+          if (el.getBoundingClientRect().top < window.innerHeight * 0.88) {
+            el.classList.add('v');
+            const cn = el.querySelector('.count-num');
+            if (cn && !cn.dataset.counted) {
+              cn.dataset.counted = '1';
+              const target = +cn.dataset.target;
+              const dur = 1800;
+              const step = 16;
+              const steps = dur / step;
+              let i = 0;
+              const t = setInterval(() => {
+                i++;
+                const val = Math.round(target * (i / steps));
+                cn.textContent = target >= 1000 ? Math.round(val / 1000) + 'K' : val;
+                if (i >= steps) {
+                  cn.textContent = target >= 1000 ? target / 1000 + 'K' : target;
+                  clearInterval(t);
+                }
+              }, step);
+            }
+          }
+        });
+        /* about-img line */
+        pg.querySelectorAll('.about-img').forEach(el => {
+          if (el.getBoundingClientRect().top < window.innerHeight * 0.88) el.classList.add('v');
+        });
+      }
+
+      /* ── SCROLL ── */
+      const prog = document.getElementById('prog');
+      const nav = document.getElementById('sitenav');
+      window.addEventListener(
+        'scroll',
+        () => {
+          const st = window.scrollY;
+          const dh = document.documentElement.scrollHeight - window.innerHeight;
+          prog.style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+          if (currentPage === 'home') nav.classList.toggle('scrolled', st > 60);
+          checkReveal(currentPage);
+          /* parallax hero */
+          if (currentPage === 'home') {
+            const hc = document.querySelector('#page-home .hero-content');
+            if (hc) hc.style.transform = 'translateY(' + st * 0.24 + 'px)';
+          }
+        },
+        {passive: true},
+      );
+
+      /* ── FILTER ── */
+      function filterProjects(cat, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.proj-item').forEach(item => {
+          const show = cat === 'all' || item.dataset.cat === cat;
+          item.style.opacity = show ? '1' : '0';
+          item.style.transform = show ? '' : 'scale(.92)';
+          item.style.pointerEvents = show ? '' : 'none';
+          item.style.transition = 'opacity .4s,transform .4s';
+        });
+      }
+
+      /* ── FOOTER ── */
+      const tpl = document.getElementById('footer-tpl');
+      document.querySelectorAll('.footer-slot').forEach(slot => {
+        slot.replaceWith(tpl.content.cloneNode(true));
+      });
+
+      /* ── MAGNETIC BUTTONS ── */
+      document.querySelectorAll('.fsub,.filter-btn').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+          const r = btn.getBoundingClientRect();
+          const dx = (e.clientX - r.left - r.width / 2) * 0.25;
+          const dy = (e.clientY - r.top - r.height / 2) * 0.25;
+          btn.style.transform = `translate(${dx}px,${dy}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = '';
+        });
+      });
+
+      /* ── INNER PAGE HERO READY ── */
+      document.querySelectorAll('.page-hero').forEach(h => {
+        setTimeout(() => h.classList.add('ready'), 100);
+      });
+    </script>
+  </body>
+</html>
